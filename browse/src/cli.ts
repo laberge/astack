@@ -1,8 +1,8 @@
 /**
- * gstack CLI — thin wrapper that talks to the persistent server
+ * astack CLI — thin wrapper that talks to the persistent server
  *
  * Flow:
- *   1. Read .gstack/browse.json for port + token
+ *   1. Read .astack/browse.json for port + token
  *   2. If missing or stale PID → start server in background
  *   3. Health check + version mismatch detection
  *   4. Send command via HTTP POST
@@ -180,7 +180,7 @@ async function killServer(pid: number): Promise<void> {
  * Verifies PID ownership before sending signals.
  */
 function cleanupLegacyState(): void {
-  // No legacy state on Windows — /tmp and `ps` don't exist, and gstack
+  // No legacy state on Windows — /tmp and `ps` don't exist, and astack
   // never ran on Windows before the Node.js fallback was added.
   if (IS_WINDOWS) return;
 
@@ -440,7 +440,7 @@ async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
-    console.log(`gstack browse — Fast headless browser for AI coding agents
+    console.log(`astack browse — Fast headless browser for AI coding agents
 
 Usage: browse <command> [args...]
 
@@ -512,7 +512,7 @@ Refs:           After 'snapshot', use @e1, @e2... as selectors:
     }
 
     // Clean up Chromium profile locks (can persist after crashes)
-    const profileDir = path.join(process.env.HOME || '/tmp', '.gstack', 'chromium-profile');
+    const profileDir = path.join(process.env.HOME || '/tmp', '.astack', 'chromium-profile');
     for (const lockFile of ['SingletonLock', 'SingletonSocket', 'SingletonCookie']) {
       try { fs.unlinkSync(path.join(profileDir, lockFile)); } catch {}
     }
@@ -548,7 +548,7 @@ Refs:           After 'snapshot', use @e1, @e2... as selectors:
       const agentScript = path.resolve(__dirname, 'sidebar-agent.ts');
       try {
         // Clear old agent queue
-        const agentQueue = path.join(process.env.HOME || '/tmp', '.gstack', 'sidebar-agent-queue.jsonl');
+        const agentQueue = path.join(process.env.HOME || '/tmp', '.astack', 'sidebar-agent-queue.jsonl');
         try { fs.writeFileSync(agentQueue, ''); } catch {}
 
         const agentProc = Bun.spawn(['bun', 'run', agentScript], {
@@ -610,7 +610,7 @@ Refs:           After 'snapshot', use @e1, @e2... as selectors:
       }
     }
     // Clean profile locks and state file
-    const profileDir = path.join(process.env.HOME || '/tmp', '.gstack', 'chromium-profile');
+    const profileDir = path.join(process.env.HOME || '/tmp', '.astack', 'chromium-profile');
     for (const lockFile of ['SingletonLock', 'SingletonSocket', 'SingletonCookie']) {
       try { fs.unlinkSync(path.join(profileDir, lockFile)); } catch {}
     }

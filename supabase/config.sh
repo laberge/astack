@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Supabase project config for gstack telemetry
+# Supabase project config for astack telemetry
 # These are PUBLIC keys — safe to commit (like Firebase public config).
 # RLS denies all access to the anon key. All reads and writes go through
 # edge functions (which use SUPABASE_SERVICE_ROLE_KEY server-side).

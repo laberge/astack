@@ -1,5 +1,5 @@
 /**
- * gstack browse server — persistent Chromium daemon
+ * astack browse server — persistent Chromium daemon
  *
  * Architecture:
  *   Bun.serve HTTP on localhost → routes commands to Playwright
@@ -8,8 +8,8 @@
  *   Auto-shutdown after BROWSE_IDLE_TIMEOUT (default 30 min)
  *
  * State:
- *   State file: <project-root>/.gstack/browse.json (set via BROWSE_STATE_FILE env)
- *   Log files:  <project-root>/.gstack/browse-{console,network,dialog}.log
+ *   State file: <project-root>/.astack/browse.json (set via BROWSE_STATE_FILE env)
+ *   Log files:  <project-root>/.astack/browse-{console,network,dialog}.log
  *   Port:       random 10000-60000 (or BROWSE_PORT env for debug override)
  */
 
@@ -59,7 +59,7 @@ function generateHelpText(): string {
     'Visual', 'Snapshot', 'Meta', 'Tabs', 'Server',
   ];
 
-  const lines = ['gstack browse — headless browser for AI agents', '', 'Commands:'];
+  const lines = ['astack browse — headless browser for AI agents', '', 'Commands:'];
   for (const cat of categoryOrder) {
     const cmds = groups.get(cat);
     if (!cmds) continue;
@@ -115,7 +115,7 @@ interface SidebarSession {
   lastActiveAt: string;
 }
 
-const SESSIONS_DIR = path.join(process.env.HOME || '/tmp', '.gstack', 'sidebar-sessions');
+const SESSIONS_DIR = path.join(process.env.HOME || '/tmp', '.astack', 'sidebar-sessions');
 const AGENT_TIMEOUT_MS = 300_000; // 5 minutes — multi-page tasks need time
 const MAX_QUEUE = 5;
 
@@ -132,8 +132,8 @@ let chatNextId = 0;
 function findBrowseBin(): string {
   const candidates = [
     path.resolve(__dirname, '..', 'dist', 'browse'),
-    path.resolve(__dirname, '..', '..', '.claude', 'skills', 'gstack', 'browse', 'dist', 'browse'),
-    path.join(process.env.HOME || '', '.claude', 'skills', 'gstack', 'browse', 'dist', 'browse'),
+    path.resolve(__dirname, '..', '..', '.claude', 'skills', 'astack', 'browse', 'dist', 'browse'),
+    path.join(process.env.HOME || '', '.claude', 'skills', 'astack', 'browse', 'dist', 'browse'),
   ];
   for (const c of candidates) {
     try { if (fs.existsSync(c)) return c; } catch {}
@@ -184,7 +184,7 @@ function shortenPath(str: string): string {
     .replace(new RegExp(BROWSE_BIN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '$B')
     .replace(/\/Users\/[^/]+/g, '~')
     .replace(/\/conductor\/workspaces\/[^/]+\/[^/]+/g, '')
-    .replace(/\.claude\/skills\/gstack\//g, '')
+    .replace(/\.claude\/skills\/astack\//g, '')
     .replace(/browse\/dist\/browse/g, '$B');
 }
 
@@ -248,7 +248,7 @@ function createWorktree(sessionId: string): string | null {
     if (gitCheck.exitCode !== 0) return null;
     const repoRoot = gitCheck.stdout.toString().trim();
 
-    const worktreeDir = path.join(process.env.HOME || '/tmp', '.gstack', 'worktrees', sessionId.slice(0, 8));
+    const worktreeDir = path.join(process.env.HOME || '/tmp', '.astack', 'worktrees', sessionId.slice(0, 8));
 
     // Clean up if dir exists from prior crash
     if (fs.existsSync(worktreeDir)) {
@@ -404,8 +404,8 @@ function spawnClaude(userMessage: string): void {
   // fails with ENOENT on everything, including /bin/bash). Instead,
   // write the command to a queue file that the sidebar-agent process
   // (running as non-compiled bun) picks up and spawns claude.
-  const gstackDir = path.join(process.env.HOME || '/tmp', '.gstack');
-  const agentQueue = path.join(gstackDir, 'sidebar-agent-queue.jsonl');
+  const astackDir = path.join(process.env.HOME || '/tmp', '.astack');
+  const agentQueue = path.join(astackDir, 'sidebar-agent-queue.jsonl');
   const entry = JSON.stringify({
     ts: new Date().toISOString(),
     message: userMessage,
@@ -416,7 +416,7 @@ function spawnClaude(userMessage: string): void {
     sessionId: sidebarSession?.claudeSessionId || null,
   });
   try {
-    fs.mkdirSync(gstackDir, { recursive: true });
+    fs.mkdirSync(astackDir, { recursive: true });
     fs.appendFileSync(agentQueue, entry + '\n');
   } catch (err: any) {
     addChatEntry({ ts: new Date().toISOString(), role: 'agent', type: 'agent_error', error: `Failed to queue: ${err.message}` });
@@ -723,7 +723,7 @@ async function shutdown() {
   await browserManager.close();
 
   // Clean up Chromium profile locks (prevent SingletonLock on next launch)
-  const profileDir = path.join(process.env.HOME || '/tmp', '.gstack', 'chromium-profile');
+  const profileDir = path.join(process.env.HOME || '/tmp', '.astack', 'chromium-profile');
   for (const lockFile of ['SingletonLock', 'SingletonSocket', 'SingletonCookie']) {
     try { fs.unlinkSync(path.join(profileDir, lockFile)); } catch {}
   }
@@ -754,7 +754,7 @@ function emergencyCleanup() {
   // Save session state so chat history persists across crashes
   try { saveSession(); } catch {}
   // Clean Chromium profile locks
-  const profileDir = path.join(process.env.HOME || '/tmp', '.gstack', 'chromium-profile');
+  const profileDir = path.join(process.env.HOME || '/tmp', '.astack', 'chromium-profile');
   for (const lockFile of ['SingletonLock', 'SingletonSocket', 'SingletonCookie']) {
     try { fs.unlinkSync(path.join(profileDir, lockFile)); } catch {}
   }

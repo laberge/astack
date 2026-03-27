@@ -9,14 +9,14 @@ export interface HostPaths {
 
 export const HOST_PATHS: Record<Host, HostPaths> = {
   claude: {
-    skillRoot: '~/.claude/skills/gstack',
-    localSkillRoot: '.claude/skills/gstack',
-    binDir: '~/.claude/skills/gstack/bin',
-    browseDir: '~/.claude/skills/gstack/browse/dist',
+    skillRoot: '~/.claude/skills/astack',
+    localSkillRoot: '.claude/skills/astack',
+    binDir: '~/.claude/skills/astack/bin',
+    browseDir: '~/.claude/skills/astack/browse/dist',
   },
   codex: {
     skillRoot: '$GSTACK_ROOT',
-    localSkillRoot: '.agents/skills/gstack',
+    localSkillRoot: '.agents/skills/astack',
     binDir: '$GSTACK_BIN',
     browseDir: '$GSTACK_BROWSE',
   },

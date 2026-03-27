@@ -3,8 +3,8 @@ import type { TemplateContext } from './types';
 function generatePreambleBash(ctx: TemplateContext): string {
   const runtimeRoot = ctx.host === 'codex'
     ? `_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-GSTACK_ROOT="$HOME/.codex/skills/gstack"
-[ -n "$_ROOT" ] && [ -d "$_ROOT/.agents/skills/gstack" ] && GSTACK_ROOT="$_ROOT/.agents/skills/gstack"
+GSTACK_ROOT="$HOME/.codex/skills/astack"
+[ -n "$_ROOT" ] && [ -d "$_ROOT/.agents/skills/astack" ] && GSTACK_ROOT="$_ROOT/.agents/skills/astack"
 GSTACK_BIN="$GSTACK_ROOT/bin"
 GSTACK_BROWSE="$GSTACK_ROOT/browse/dist"
 `
@@ -13,56 +13,56 @@ GSTACK_BROWSE="$GSTACK_ROOT/browse/dist"
   return `## Preamble (run first)
 
 \`\`\`bash
-${runtimeRoot}_UPD=$(${ctx.paths.binDir}/gstack-update-check 2>/dev/null || ${ctx.paths.localSkillRoot}/bin/gstack-update-check 2>/dev/null || true)
+${runtimeRoot}_UPD=$(${ctx.paths.binDir}/astack-update-check 2>/dev/null || ${ctx.paths.localSkillRoot}/bin/astack-update-check 2>/dev/null || true)
 [ -n "$_UPD" ] && echo "$_UPD" || true
-mkdir -p ~/.gstack/sessions
-touch ~/.gstack/sessions/"$PPID"
-_SESSIONS=$(find ~/.gstack/sessions -mmin -120 -type f 2>/dev/null | wc -l | tr -d ' ')
-find ~/.gstack/sessions -mmin +120 -type f -delete 2>/dev/null || true
-_CONTRIB=$(${ctx.paths.binDir}/gstack-config get gstack_contributor 2>/dev/null || true)
-_PROACTIVE=$(${ctx.paths.binDir}/gstack-config get proactive 2>/dev/null || echo "true")
-_PROACTIVE_PROMPTED=$([ -f ~/.gstack/.proactive-prompted ] && echo "yes" || echo "no")
+mkdir -p ~/.astack/sessions
+touch ~/.astack/sessions/"$PPID"
+_SESSIONS=$(find ~/.astack/sessions -mmin -120 -type f 2>/dev/null | wc -l | tr -d ' ')
+find ~/.astack/sessions -mmin +120 -type f -delete 2>/dev/null || true
+_CONTRIB=$(${ctx.paths.binDir}/astack-config get astack_contributor 2>/dev/null || true)
+_PROACTIVE=$(${ctx.paths.binDir}/astack-config get proactive 2>/dev/null || echo "true")
+_PROACTIVE_PROMPTED=$([ -f ~/.astack/.proactive-prompted ] && echo "yes" || echo "no")
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
 echo "PROACTIVE_PROMPTED: $_PROACTIVE_PROMPTED"
-source <(${ctx.paths.binDir}/gstack-repo-mode 2>/dev/null) || true
+source <(${ctx.paths.binDir}/astack-repo-mode 2>/dev/null) || true
 REPO_MODE=\${REPO_MODE:-unknown}
 echo "REPO_MODE: $REPO_MODE"
-_LAKE_SEEN=$([ -f ~/.gstack/.completeness-intro-seen ] && echo "yes" || echo "no")
+_LAKE_SEEN=$([ -f ~/.astack/.completeness-intro-seen ] && echo "yes" || echo "no")
 echo "LAKE_INTRO: $_LAKE_SEEN"
-_TEL=$(${ctx.paths.binDir}/gstack-config get telemetry 2>/dev/null || true)
-_TEL_PROMPTED=$([ -f ~/.gstack/.telemetry-prompted ] && echo "yes" || echo "no")
+_TEL=$(${ctx.paths.binDir}/astack-config get telemetry 2>/dev/null || true)
+_TEL_PROMPTED=$([ -f ~/.astack/.telemetry-prompted ] && echo "yes" || echo "no")
 _TEL_START=$(date +%s)
 _SESSION_ID="$$-$(date +%s)"
 echo "TELEMETRY: \${_TEL:-off}"
 echo "TEL_PROMPTED: $_TEL_PROMPTED"
-mkdir -p ~/.gstack/analytics
-echo '{"skill":"${ctx.skillName}","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+mkdir -p ~/.astack/analytics
+echo '{"skill":"${ctx.skillName}","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.astack/analytics/skill-usage.jsonl 2>/dev/null || true
 # zsh-compatible: use find instead of glob to avoid NOMATCH error
-for _PF in $(find ~/.gstack/analytics -maxdepth 1 -name '.pending-*' 2>/dev/null); do [ -f "$_PF" ] && ${ctx.paths.binDir}/gstack-telemetry-log --event-type skill_run --skill _pending_finalize --outcome unknown --session-id "$_SESSION_ID" 2>/dev/null || true; break; done
+for _PF in $(find ~/.astack/analytics -maxdepth 1 -name '.pending-*' 2>/dev/null); do [ -f "$_PF" ] && ${ctx.paths.binDir}/astack-telemetry-log --event-type skill_run --skill _pending_finalize --outcome unknown --session-id "$_SESSION_ID" 2>/dev/null || true; break; done
 \`\`\``;
 }
 
 function generateUpgradeCheck(ctx: TemplateContext): string {
-  return `If \`PROACTIVE\` is \`"false"\`, do not proactively suggest gstack skills AND do not
+  return `If \`PROACTIVE\` is \`"false"\`, do not proactively suggest astack skills AND do not
 auto-invoke skills based on conversation context. Only run skills the user explicitly
 types (e.g., /qa, /ship). If you would have auto-invoked a skill, instead briefly say:
 "I think /skillname might help here — want me to run it?" and wait for confirmation.
 The user opted out of proactive behavior.
 
-If output shows \`UPGRADE_AVAILABLE <old> <new>\`: read \`${ctx.paths.skillRoot}/gstack-upgrade/SKILL.md\` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise AskUserQuestion with 4 options, write snooze state if declined). If \`JUST_UPGRADED <from> <to>\`: tell user "Running gstack v{to} (just updated!)" and continue.`;
+If output shows \`UPGRADE_AVAILABLE <old> <new>\`: read \`${ctx.paths.skillRoot}/astack-upgrade/SKILL.md\` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise AskUserQuestion with 4 options, write snooze state if declined). If \`JUST_UPGRADED <from> <to>\`: tell user "Running astack v{to} (just updated!)" and continue.`;
 }
 
 function generateLakeIntro(): string {
   return `If \`LAKE_INTRO\` is \`no\`: Before continuing, introduce the Completeness Principle.
-Tell the user: "gstack follows the **Boil the Lake** principle — always do the complete
+Tell the user: "astack follows the **Boil the Lake** principle — always do the complete
 thing when AI makes the marginal cost near-zero. Read more: https://garryslist.org/posts/boil-the-ocean"
 Then offer to open the essay in their default browser:
 
 \`\`\`bash
 open https://garryslist.org/posts/boil-the-ocean
-touch ~/.gstack/.completeness-intro-seen
+touch ~/.astack/.completeness-intro-seen
 \`\`\`
 
 Only run \`open\` if the user says yes. Always run \`touch\` to mark as seen. This only happens once.`;
@@ -72,32 +72,32 @@ function generateTelemetryPrompt(ctx: TemplateContext): string {
   return `If \`TEL_PROMPTED\` is \`no\` AND \`LAKE_INTRO\` is \`yes\`: After the lake intro is handled,
 ask the user about telemetry. Use AskUserQuestion:
 
-> Help gstack get better! Community mode shares usage data (which skills you use, how long
+> Help astack get better! Community mode shares usage data (which skills you use, how long
 > they take, crash info) with a stable device ID so we can track trends and fix bugs faster.
 > No code, file paths, or repo names are ever sent.
-> Change anytime with \`gstack-config set telemetry off\`.
+> Change anytime with \`astack-config set telemetry off\`.
 
 Options:
-- A) Help gstack get better! (recommended)
+- A) Help astack get better! (recommended)
 - B) No thanks
 
-If A: run \`${ctx.paths.binDir}/gstack-config set telemetry community\`
+If A: run \`${ctx.paths.binDir}/astack-config set telemetry community\`
 
 If B: ask a follow-up AskUserQuestion:
 
-> How about anonymous mode? We just learn that *someone* used gstack — no unique ID,
+> How about anonymous mode? We just learn that *someone* used astack — no unique ID,
 > no way to connect sessions. Just a counter that helps us know if anyone's out there.
 
 Options:
 - A) Sure, anonymous is fine
 - B) No thanks, fully off
 
-If B→A: run \`${ctx.paths.binDir}/gstack-config set telemetry anonymous\`
-If B→B: run \`${ctx.paths.binDir}/gstack-config set telemetry off\`
+If B→A: run \`${ctx.paths.binDir}/astack-config set telemetry anonymous\`
+If B→B: run \`${ctx.paths.binDir}/astack-config set telemetry off\`
 
 Always run:
 \`\`\`bash
-touch ~/.gstack/.telemetry-prompted
+touch ~/.astack/.telemetry-prompted
 \`\`\`
 
 This only happens once. If \`TEL_PROMPTED\` is \`yes\`, skip this entirely.`;
@@ -107,7 +107,7 @@ function generateProactivePrompt(ctx: TemplateContext): string {
   return `If \`PROACTIVE_PROMPTED\` is \`no\` AND \`TEL_PROMPTED\` is \`yes\`: After telemetry is handled,
 ask the user about proactive behavior. Use AskUserQuestion:
 
-> gstack can proactively figure out when you might need a skill while you work —
+> astack can proactively figure out when you might need a skill while you work —
 > like suggesting /qa when you say "does this work?" or /investigate when you hit
 > a bug. We recommend keeping this on — it speeds up every part of your workflow.
 
@@ -115,12 +115,12 @@ Options:
 - A) Keep it on (recommended)
 - B) Turn it off — I'll type /commands myself
 
-If A: run \`${ctx.paths.binDir}/gstack-config set proactive true\`
-If B: run \`${ctx.paths.binDir}/gstack-config set proactive false\`
+If A: run \`${ctx.paths.binDir}/astack-config set proactive true\`
+If B: run \`${ctx.paths.binDir}/astack-config set proactive false\`
 
 Always run:
 \`\`\`bash
-touch ~/.gstack/.proactive-prompted
+touch ~/.astack/.proactive-prompted
 \`\`\`
 
 This only happens once. If \`PROACTIVE_PROMPTED\` is \`yes\`, skip this entirely.`;
@@ -143,11 +143,11 @@ Per-skill instructions may add additional formatting rules on top of this baseli
 function generateCompletenessSection(): string {
   return `## Completeness Principle — Boil the Lake
 
-AI makes completeness near-free. Always recommend the complete option over shortcuts — the delta is minutes with CC+gstack. A "lake" (100% coverage, all edge cases) is boilable; an "ocean" (full rewrite, multi-quarter migration) is not. Boil lakes, flag oceans.
+AI makes completeness near-free. Always recommend the complete option over shortcuts — the delta is minutes with CC+astack. A "lake" (100% coverage, all edge cases) is boilable; an "ocean" (full rewrite, multi-quarter migration) is not. Boil lakes, flag oceans.
 
 **Effort reference** — always show both scales:
 
-| Task type | Human team | CC+gstack | Compression |
+| Task type | Human team | CC+astack | Compression |
 |-----------|-----------|-----------|-------------|
 | Boilerplate | 2 days | 15 min | ~100x |
 | Tests | 1 day | 15 min | ~50x |
@@ -255,14 +255,14 @@ Use AskUserQuestion:
     \`\`\`bash
     gh issue create \\
       --title "Pre-existing test failure: <test-name>" \\
-      --body "Found failing on branch <current-branch>. Failure is pre-existing.\\n\\n**Error:**\\n\`\`\`\\n<first 10 lines>\\n\`\`\`\\n\\n**Last modified by:** <author>\\n**Noticed by:** gstack /ship on <date>" \\
+      --body "Found failing on branch <current-branch>. Failure is pre-existing.\\n\\n**Error:**\\n\`\`\`\\n<first 10 lines>\\n\`\`\`\\n\\n**Last modified by:** <author>\\n**Noticed by:** astack /ship on <date>" \\
       --assignee "<github-username>"
     \`\`\`
   - **If GitLab:**
     \`\`\`bash
     glab issue create \\
       -t "Pre-existing test failure: <test-name>" \\
-      -d "Found failing on branch <current-branch>. Failure is pre-existing.\\n\\n**Error:**\\n\`\`\`\\n<first 10 lines>\\n\`\`\`\\n\\n**Last modified by:** <author>\\n**Noticed by:** gstack /ship on <date>" \\
+      -d "Found failing on branch <current-branch>. Failure is pre-existing.\\n\\n**Error:**\\n\`\`\`\\n<first 10 lines>\\n\`\`\`\\n\\n**Last modified by:** <author>\\n**Noticed by:** astack /ship on <date>" \\
       -a "<gitlab-username>"
     \`\`\`
 - If neither CLI is available or \`--assignee\`/\`-a\` fails (user not in org, etc.), create the issue without assignee and note who should look at it in the body.
@@ -281,18 +281,18 @@ Before building anything unfamiliar, **search first.** See \`${ctx.paths.skillRo
 
 **Eureka:** When first-principles reasoning contradicts conventional wisdom, name it and log:
 \`\`\`bash
-jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> ~/.gstack/analytics/eureka.jsonl 2>/dev/null || true
+jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> ~/.astack/analytics/eureka.jsonl 2>/dev/null || true
 \`\`\``;
 }
 
 function generateContributorMode(): string {
   return `## Contributor Mode
 
-If \`_CONTRIB\` is \`true\`: you are in **contributor mode**. At the end of each major workflow step, rate your gstack experience 0-10. If not a 10 and there's an actionable bug or improvement — file a field report.
+If \`_CONTRIB\` is \`true\`: you are in **contributor mode**. At the end of each major workflow step, rate your astack experience 0-10. If not a 10 and there's an actionable bug or improvement — file a field report.
 
-**File only:** gstack tooling bugs where the input was reasonable but gstack failed. **Skip:** user app bugs, network errors, auth failures on user's site.
+**File only:** astack tooling bugs where the input was reasonable but astack failed. **Skip:** user app bugs, network errors, auth failures on user's site.
 
-**To file:** write \`~/.gstack/contributor-logs/{slug}.md\`:
+**To file:** write \`~/.astack/contributor-logs/{slug}.md\`:
 \`\`\`
 # {Title}
 **What I tried:** {action} | **What happened:** {result} | **Rating:** {0-10}
@@ -339,7 +339,7 @@ Determine the outcome from the workflow result (success if completed normally, e
 if it failed, abort if the user interrupted).
 
 **PLAN MODE EXCEPTION — ALWAYS RUN:** This command writes telemetry to
-\`~/.gstack/analytics/\` (user config directory, not project files). The skill
+\`~/.astack/analytics/\` (user config directory, not project files). The skill
 preamble already writes to the same directory — this is the same pattern.
 Skipping this command loses session duration and outcome data.
 
@@ -348,8 +348,8 @@ Run this bash:
 \`\`\`bash
 _TEL_END=$(date +%s)
 _TEL_DUR=$(( _TEL_END - _TEL_START ))
-rm -f ~/.gstack/analytics/.pending-"$_SESSION_ID" 2>/dev/null || true
-~/.claude/skills/gstack/bin/gstack-telemetry-log \\
+rm -f ~/.astack/analytics/.pending-"$_SESSION_ID" 2>/dev/null || true
+~/.claude/skills/astack/bin/astack-telemetry-log \\
   --skill "SKILL_NAME" --duration "$_TEL_DUR" --outcome "OUTCOME" \\
   --used-browse "USED_BROWSE" --session-id "$_SESSION_ID" 2>/dev/null &
 \`\`\`
@@ -368,7 +368,7 @@ When you are in plan mode and about to call ExitPlanMode:
 3. If it does NOT — run this command:
 
 \\\`\\\`\\\`bash
-~/.claude/skills/gstack/bin/gstack-review-read
+~/.claude/skills/astack/bin/astack-review-read
 \\\`\\\`\\\`
 
 Then write a \`## GSTACK REVIEW REPORT\` section to the end of the plan file:
