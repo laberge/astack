@@ -1,6 +1,0 @@
-interface:
-  display_name: "astack-design-consultation"
-  short_description: "Design consultation: understands your product, researches the landscape, proposes a complete design system..."
-  default_prompt: "Use astack-design-consultation for this task."
-policy:
-  allow_implicit_invocation: true

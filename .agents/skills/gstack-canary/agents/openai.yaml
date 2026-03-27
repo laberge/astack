@@ -1,6 +1,0 @@
-interface:
-  display_name: "astack-canary"
-  short_description: "Post-deploy canary monitoring. Watches the live app for console errors, performance regressions, and page failures..."
-  default_prompt: "Use astack-canary for this task."
-policy:
-  allow_implicit_invocation: true

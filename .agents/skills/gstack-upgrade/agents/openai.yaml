@@ -1,6 +1,0 @@
-interface:
-  display_name: "astack-upgrade"
-  short_description: "Upgrade astack to the latest version. Detects global vs vendored install, runs the upgrade, and shows what's new...."
-  default_prompt: "Use astack-upgrade for this task."
-policy:
-  allow_implicit_invocation: true

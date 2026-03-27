@@ -1,6 +1,0 @@
-interface:
-  display_name: "astack-benchmark"
-  short_description: "Performance regression detection using the browse daemon. Establishes baselines for page load times, Core Web..."
-  default_prompt: "Use astack-benchmark for this task."
-policy:
-  allow_implicit_invocation: true

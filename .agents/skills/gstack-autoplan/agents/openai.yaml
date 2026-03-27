@@ -1,6 +1,0 @@
-interface:
-  display_name: "astack-autoplan"
-  short_description: "Auto-review pipeline — reads the full CEO, design, and eng review skills from disk and runs them sequentially with..."
-  default_prompt: "Use astack-autoplan for this task."
-policy:
-  allow_implicit_invocation: true
