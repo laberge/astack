@@ -6,25 +6,25 @@
 # Posts to the telemetry-ingest edge function (not PostgREST directly).
 #
 # Env overrides (for testing):
-#   GSTACK_STATE_DIR           — override ~/.astack state directory
-#   GSTACK_DIR                 — override auto-detected astack root
-#   GSTACK_SUPABASE_URL        — override Supabase project URL
+#   ASTACK_STATE_DIR           — override ~/.astack state directory
+#   ASTACK_DIR                 — override auto-detected astack root
+#   ASTACK_SUPABASE_URL        — override Supabase project URL
 set -uo pipefail
 
-GSTACK_DIR="${GSTACK_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
-STATE_DIR="${GSTACK_STATE_DIR:-$HOME/.astack}"
+ASTACK_DIR="${ASTACK_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+STATE_DIR="${ASTACK_STATE_DIR:-$HOME/.astack}"
 ANALYTICS_DIR="$STATE_DIR/analytics"
 JSONL_FILE="$ANALYTICS_DIR/skill-usage.jsonl"
 CURSOR_FILE="$ANALYTICS_DIR/.last-sync-line"
 RATE_FILE="$ANALYTICS_DIR/.last-sync-time"
-CONFIG_CMD="$GSTACK_DIR/bin/astack-config"
+CONFIG_CMD="$ASTACK_DIR/bin/astack-config"
 
 # Source Supabase config if not overridden by env
-if [ -z "${GSTACK_SUPABASE_URL:-}" ] && [ -f "$GSTACK_DIR/supabase/config.sh" ]; then
-  . "$GSTACK_DIR/supabase/config.sh"
+if [ -z "${ASTACK_SUPABASE_URL:-}" ] && [ -f "$ASTACK_DIR/supabase/config.sh" ]; then
+  . "$ASTACK_DIR/supabase/config.sh"
 fi
-SUPABASE_URL="${GSTACK_SUPABASE_URL:-}"
-ANON_KEY="${GSTACK_SUPABASE_ANON_KEY:-}"
+SUPABASE_URL="${ASTACK_SUPABASE_URL:-}"
+ANON_KEY="${ASTACK_SUPABASE_ANON_KEY:-}"
 
 # ─── Pre-checks ──────────────────────────────────────────────
 # No Supabase URL configured yet → exit silently

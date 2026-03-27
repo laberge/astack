@@ -87,7 +87,7 @@ Summary. For prior reviews, use the JSONL fields directly — they contain all r
 Produce this markdown table:
 
 \\\`\\\`\\\`markdown
-## GSTACK REVIEW REPORT
+## ASTACK REVIEW REPORT
 
 | Review | Trigger | Why | Runs | Status | Findings |
 |--------|---------|-----|------|--------|----------|
@@ -111,9 +111,9 @@ Below the table, add these lines (omit any that are empty/not applicable):
 file you are allowed to edit in plan mode. The plan file review report is part of the
 plan's living status.
 
-- Search the plan file for a \\\`## GSTACK REVIEW REPORT\\\` section **anywhere** in the file
+- Search the plan file for a \\\`## ASTACK REVIEW REPORT\\\` section **anywhere** in the file
   (not just at the end — content may have been added after it).
-- If found, **replace it** entirely using the Edit tool. Match from \\\`## GSTACK REVIEW REPORT\\\`
+- If found, **replace it** entirely using the Edit tool. Match from \\\`## ASTACK REVIEW REPORT\\\`
   through either the next \\\`## \\\` heading or end of file, whichever comes first. This ensures
   content added after the report section is preserved, not eaten. If the Edit fails
   (e.g., concurrent edit changed the content), re-read the plan file and retry once.
@@ -655,7 +655,7 @@ Read the plan file. Extract every actionable item — anything that describes wo
 **Ignore:**
 - Context/Background sections (\`## Context\`, \`## Background\`, \`## Problem\`)
 - Questions and open items (marked with ?, "TBD", "TODO: decide")
-- Review report sections (\`## GSTACK REVIEW REPORT\`)
+- Review report sections (\`## ASTACK REVIEW REPORT\`)
 - Explicitly deferred items ("Future:", "Out of scope:", "NOT in scope:", "P2:", "P3:", "P4:")
 - CEO Review Decisions sections (these record choices, not work items)
 

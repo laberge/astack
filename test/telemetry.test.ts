@@ -7,13 +7,13 @@ import * as os from 'os';
 const ROOT = path.resolve(import.meta.dir, '..');
 const BIN = path.join(ROOT, 'bin');
 
-// Each test gets a fresh temp directory for GSTACK_STATE_DIR
+// Each test gets a fresh temp directory for ASTACK_STATE_DIR
 let tmpDir: string;
 
 function run(cmd: string, env: Record<string, string> = {}): string {
   return execSync(cmd, {
     cwd: ROOT,
-    env: { ...process.env, GSTACK_STATE_DIR: tmpDir, GSTACK_DIR: ROOT, ...env },
+    env: { ...process.env, ASTACK_STATE_DIR: tmpDir, ASTACK_DIR: ROOT, ...env },
     encoding: 'utf-8',
     timeout: 10000,
   }).trim();
@@ -245,13 +245,13 @@ describe('astack-analytics', () => {
 
 describe('astack-telemetry-sync', () => {
   test('exits silently with no Supabase URL configured', () => {
-    // Default: GSTACK_SUPABASE_URL is not set → exit 0
+    // Default: ASTACK_SUPABASE_URL is not set → exit 0
     const result = run(`${BIN}/astack-telemetry-sync`);
     expect(result).toBe('');
   });
 
   test('exits silently with no JSONL file', () => {
-    const result = run(`${BIN}/astack-telemetry-sync`, { GSTACK_SUPABASE_URL: 'http://localhost:9999' });
+    const result = run(`${BIN}/astack-telemetry-sync`, { ASTACK_SUPABASE_URL: 'http://localhost:9999' });
     expect(result).toBe('');
   });
 
@@ -274,18 +274,18 @@ describe('astack-telemetry-sync', () => {
 
 describe('astack-community-dashboard', () => {
   test('shows unconfigured message when no Supabase config available', () => {
-    // Use a fake GSTACK_DIR with no supabase/config.sh
+    // Use a fake ASTACK_DIR with no supabase/config.sh
     const output = run(`${BIN}/astack-community-dashboard`, {
-      GSTACK_DIR: tmpDir,
-      GSTACK_SUPABASE_URL: '',
-      GSTACK_SUPABASE_ANON_KEY: '',
+      ASTACK_DIR: tmpDir,
+      ASTACK_SUPABASE_URL: '',
+      ASTACK_SUPABASE_ANON_KEY: '',
     });
     expect(output).toContain('Supabase not configured');
     expect(output).toContain('astack-analytics');
   });
 
   test('connects to Supabase when config exists', () => {
-    // Use the real GSTACK_DIR which has supabase/config.sh
+    // Use the real ASTACK_DIR which has supabase/config.sh
     const output = run(`${BIN}/astack-community-dashboard`);
     expect(output).toContain('astack community dashboard');
     // Should not show "not configured" since config.sh exists

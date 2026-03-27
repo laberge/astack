@@ -153,7 +153,7 @@ You can now watch Claude work in a real Chrome window and direct it from a sideb
 - **CI runs only gate tests by default — periodic tests run weekly.** Every E2E test is now classified as `gate` (blocks PRs) or `periodic` (weekly cron + on-demand). Gate tests cover functional correctness and safety guardrails. Periodic tests cover expensive Opus quality benchmarks, non-deterministic routing tests, and tests requiring external services (Codex, Gemini). CI feedback is faster and cheaper while quality benchmarks still run weekly.
 - **Global touchfiles are now granular.** Previously, changing `gen-skill-docs.ts` triggered all 56 E2E tests. Now only the ~27 tests that actually depend on it run. Same for `llm-judge.ts`, `test-server.ts`, `worktree.ts`, and the Codex/Gemini session runners. The truly global list is down to 3 files (session-runner, eval-store, touchfiles.ts itself).
 - **New `test:gate` and `test:periodic` scripts** replace `test:e2e:fast`. Use `EVALS_TIER=gate` or `EVALS_TIER=periodic` to filter tests by tier.
-- **Telemetry sync uses `GSTACK_SUPABASE_URL` instead of `GSTACK_TELEMETRY_ENDPOINT`.** Edge functions need the base URL, not the REST API path. The old variable is removed from `config.sh`.
+- **Telemetry sync uses `ASTACK_SUPABASE_URL` instead of `ASTACK_TELEMETRY_ENDPOINT`.** Edge functions need the base URL, not the REST API path. The old variable is removed from `config.sh`.
 - **Cursor advancement is now safe.** The sync script checks the edge function's `inserted` count before advancing — if zero events were inserted, the cursor holds and retries next run.
 
 ### Fixed
@@ -176,7 +176,7 @@ You can now watch Claude work in a real Chrome window and direct it from a sideb
 
 ### Added
 
-- **E2E tests verify plan review reports appear at the bottom of plans.** The `/plan-eng-review` review report is now tested end-to-end — if it stops writing `## GSTACK REVIEW REPORT` to the plan file, the test catches it.
+- **E2E tests verify plan review reports appear at the bottom of plans.** The `/plan-eng-review` review report is now tested end-to-end — if it stops writing `## ASTACK REVIEW REPORT` to the plan file, the test catches it.
 - **E2E tests verify Codex is offered in every plan skill.** Four new lightweight tests confirm that `/office-hours`, `/plan-ceo-review`, `/plan-design-review`, and `/plan-eng-review` all check for Codex availability, prompt the user, and handle the fallback when Codex is unavailable.
 
 ### For contributors
@@ -393,14 +393,14 @@ Thanks to @osc, @Explorer1092, @Qike-Li, @francoisaubert1, @itstimwhite, @yinanl
 
 ### Changed
 
-- **`GSTACK_DIR` renamed to `SOURCE_GSTACK_DIR` / `INSTALL_GSTACK_DIR`** throughout the setup script for clarity about which path points to the source repo vs the install location.
+- **`ASTACK_DIR` renamed to `SOURCE_ASTACK_DIR` / `INSTALL_ASTACK_DIR`** throughout the setup script for clarity about which path points to the source repo vs the install location.
 - **CI validates Codex generation succeeds** instead of checking committed file freshness (since `.agents/` is no longer committed).
 
 ## [0.11.1.1] - 2026-03-22 — Plan Files Always Show Review Status
 
 ### Added
 
-- **Every plan file now shows review status.** When you exit plan mode, the plan file automatically gets a `GSTACK REVIEW REPORT` section — even if you haven't run any formal reviews yet. Previously, this section only appeared after running `/plan-eng-review`, `/plan-ceo-review`, `/plan-design-review`, or `/codex review`. Now you always know where you stand: which reviews have run, which haven't, and what to do next.
+- **Every plan file now shows review status.** When you exit plan mode, the plan file automatically gets a `ASTACK REVIEW REPORT` section — even if you haven't run any formal reviews yet. Previously, this section only appeared after running `/plan-eng-review`, `/plan-ceo-review`, `/plan-design-review`, or `/codex review`. Now you always know where you stand: which reviews have run, which haven't, and what to do next.
 
 ## [0.11.1.0] - 2026-03-22 — Global Retro: Cross-Project AI Coding Retrospective
 
@@ -993,7 +993,7 @@ Read the philosophy: https://garryslist.org/posts/boil-the-ocean
 ### Added
 - **`bin/astack-config` CLI** — simple get/set/list interface for `~/.astack/config.yaml`. Used by update-check and upgrade skill for persistent settings (auto_upgrade, update_check).
 - **Smart update check** — 12h cache TTL (was 24h), exponential snooze backoff (24h → 48h → 1 week) when user declines upgrades, `update_check: false` config option to disable checks entirely. Snooze resets when a new version is released.
-- **Auto-upgrade mode** — set `auto_upgrade: true` in config or `GSTACK_AUTO_UPGRADE=1` env var to skip the upgrade prompt and update automatically.
+- **Auto-upgrade mode** — set `auto_upgrade: true` in config or `ASTACK_AUTO_UPGRADE=1` env var to skip the upgrade prompt and update automatically.
 - **4-option upgrade prompt** — "Yes, upgrade now", "Always keep me up to date", "Not now" (snooze), "Never ask again" (disable).
 - **Vendored copy sync** — `/astack-upgrade` now detects and updates local vendored copies in the current project after upgrading the primary install.
 - 25 new tests: 11 for astack-config CLI, 14 for snooze/config paths in update-check.
@@ -1133,7 +1133,7 @@ Read the philosophy: https://garryslist.org/posts/boil-the-ocean
 - `CONDUCTOR_PORT` magic offset (`browse_port = CONDUCTOR_PORT - 45600`)
 - Port scan range 9400-9409
 - Legacy fallback to `~/.claude/skills/astack/browse/src/server.ts`
-- `DEVELOPING_GSTACK.md` (renamed to CONTRIBUTING.md)
+- `DEVELOPING_ASTACK.md` (renamed to CONTRIBUTING.md)
 
 ## 0.3.1 — 2026-03-12
 

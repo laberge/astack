@@ -4,7 +4,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const CURRENT_VERSION = Deno.env.get("GSTACK_CURRENT_VERSION") || "0.6.4.1";
+const CURRENT_VERSION = Deno.env.get("ASTACK_CURRENT_VERSION") || "0.6.4.1";
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") {

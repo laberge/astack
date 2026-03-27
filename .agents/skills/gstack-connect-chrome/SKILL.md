@@ -14,29 +14,29 @@ description: |
 
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-GSTACK_ROOT="$HOME/.codex/skills/astack"
-[ -n "$_ROOT" ] && [ -d "$_ROOT/.agents/skills/astack" ] && GSTACK_ROOT="$_ROOT/.agents/skills/astack"
-GSTACK_BIN="$GSTACK_ROOT/bin"
-GSTACK_BROWSE="$GSTACK_ROOT/browse/dist"
-_UPD=$($GSTACK_BIN/astack-update-check 2>/dev/null || .agents/skills/astack/bin/astack-update-check 2>/dev/null || true)
+ASTACK_ROOT="$HOME/.codex/skills/astack"
+[ -n "$_ROOT" ] && [ -d "$_ROOT/.agents/skills/astack" ] && ASTACK_ROOT="$_ROOT/.agents/skills/astack"
+ASTACK_BIN="$ASTACK_ROOT/bin"
+ASTACK_BROWSE="$ASTACK_ROOT/browse/dist"
+_UPD=$($ASTACK_BIN/astack-update-check 2>/dev/null || .agents/skills/astack/bin/astack-update-check 2>/dev/null || true)
 [ -n "$_UPD" ] && echo "$_UPD" || true
 mkdir -p ~/.astack/sessions
 touch ~/.astack/sessions/"$PPID"
 _SESSIONS=$(find ~/.astack/sessions -mmin -120 -type f 2>/dev/null | wc -l | tr -d ' ')
 find ~/.astack/sessions -mmin +120 -type f -delete 2>/dev/null || true
-_CONTRIB=$($GSTACK_BIN/astack-config get astack_contributor 2>/dev/null || true)
-_PROACTIVE=$($GSTACK_BIN/astack-config get proactive 2>/dev/null || echo "true")
+_CONTRIB=$($ASTACK_BIN/astack-config get astack_contributor 2>/dev/null || true)
+_PROACTIVE=$($ASTACK_BIN/astack-config get proactive 2>/dev/null || echo "true")
 _PROACTIVE_PROMPTED=$([ -f ~/.astack/.proactive-prompted ] && echo "yes" || echo "no")
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
 echo "PROACTIVE_PROMPTED: $_PROACTIVE_PROMPTED"
-source <($GSTACK_BIN/astack-repo-mode 2>/dev/null) || true
+source <($ASTACK_BIN/astack-repo-mode 2>/dev/null) || true
 REPO_MODE=${REPO_MODE:-unknown}
 echo "REPO_MODE: $REPO_MODE"
 _LAKE_SEEN=$([ -f ~/.astack/.completeness-intro-seen ] && echo "yes" || echo "no")
 echo "LAKE_INTRO: $_LAKE_SEEN"
-_TEL=$($GSTACK_BIN/astack-config get telemetry 2>/dev/null || true)
+_TEL=$($ASTACK_BIN/astack-config get telemetry 2>/dev/null || true)
 _TEL_PROMPTED=$([ -f ~/.astack/.telemetry-prompted ] && echo "yes" || echo "no")
 _TEL_START=$(date +%s)
 _SESSION_ID="$$-$(date +%s)"
@@ -45,7 +45,7 @@ echo "TEL_PROMPTED: $_TEL_PROMPTED"
 mkdir -p ~/.astack/analytics
 echo '{"skill":"connect-chrome","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.astack/analytics/skill-usage.jsonl 2>/dev/null || true
 # zsh-compatible: use find instead of glob to avoid NOMATCH error
-for _PF in $(find ~/.astack/analytics -maxdepth 1 -name '.pending-*' 2>/dev/null); do [ -f "$_PF" ] && $GSTACK_BIN/astack-telemetry-log --event-type skill_run --skill _pending_finalize --outcome unknown --session-id "$_SESSION_ID" 2>/dev/null || true; break; done
+for _PF in $(find ~/.astack/analytics -maxdepth 1 -name '.pending-*' 2>/dev/null); do [ -f "$_PF" ] && $ASTACK_BIN/astack-telemetry-log --event-type skill_run --skill _pending_finalize --outcome unknown --session-id "$_SESSION_ID" 2>/dev/null || true; break; done
 ```
 
 If `PROACTIVE` is `"false"`, do not proactively suggest astack skills AND do not
@@ -54,7 +54,7 @@ types (e.g., /qa, /ship). If you would have auto-invoked a skill, instead briefl
 "I think /skillname might help here — want me to run it?" and wait for confirmation.
 The user opted out of proactive behavior.
 
-If output shows `UPGRADE_AVAILABLE <old> <new>`: read `$GSTACK_ROOT/astack-upgrade/SKILL.md` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise AskUserQuestion with 4 options, write snooze state if declined). If `JUST_UPGRADED <from> <to>`: tell user "Running astack v{to} (just updated!)" and continue.
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read `$ASTACK_ROOT/astack-upgrade/SKILL.md` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise AskUserQuestion with 4 options, write snooze state if declined). If `JUST_UPGRADED <from> <to>`: tell user "Running astack v{to} (just updated!)" and continue.
 
 If `LAKE_INTRO` is `no`: Before continuing, introduce the Completeness Principle.
 Tell the user: "astack follows the **Boil the Lake** principle — always do the complete
@@ -80,7 +80,7 @@ Options:
 - A) Help astack get better! (recommended)
 - B) No thanks
 
-If A: run `$GSTACK_BIN/astack-config set telemetry community`
+If A: run `$ASTACK_BIN/astack-config set telemetry community`
 
 If B: ask a follow-up AskUserQuestion:
 
@@ -91,8 +91,8 @@ Options:
 - A) Sure, anonymous is fine
 - B) No thanks, fully off
 
-If B→A: run `$GSTACK_BIN/astack-config set telemetry anonymous`
-If B→B: run `$GSTACK_BIN/astack-config set telemetry off`
+If B→A: run `$ASTACK_BIN/astack-config set telemetry anonymous`
+If B→B: run `$ASTACK_BIN/astack-config set telemetry off`
 
 Always run:
 ```bash
@@ -112,8 +112,8 @@ Options:
 - A) Keep it on (recommended)
 - B) Turn it off — I'll type /commands myself
 
-If A: run `$GSTACK_BIN/astack-config set proactive true`
-If B: run `$GSTACK_BIN/astack-config set proactive false`
+If A: run `$ASTACK_BIN/astack-config set proactive true`
+If B: run `$ASTACK_BIN/astack-config set proactive false`
 
 Always run:
 ```bash
@@ -159,7 +159,7 @@ Always flag anything that looks wrong — one sentence, what you noticed and its
 
 ## Search Before Building
 
-Before building anything unfamiliar, **search first.** See `$GSTACK_ROOT/ETHOS.md`.
+Before building anything unfamiliar, **search first.** See `$ASTACK_ROOT/ETHOS.md`.
 - **Layer 1** (tried and true) — don't reinvent. **Layer 2** (new and popular) — scrutinize. **Layer 3** (first principles) — prize above all.
 
 **Eureka:** When first-principles reasoning contradicts conventional wisdom, name it and log:
@@ -228,7 +228,7 @@ Run this bash:
 _TEL_END=$(date +%s)
 _TEL_DUR=$(( _TEL_END - _TEL_START ))
 rm -f ~/.astack/analytics/.pending-"$_SESSION_ID" 2>/dev/null || true
-$GSTACK_ROOT/bin/astack-telemetry-log \
+$ASTACK_ROOT/bin/astack-telemetry-log \
   --skill "SKILL_NAME" --duration "$_TEL_DUR" --outcome "OUTCOME" \
   --used-browse "USED_BROWSE" --session-id "$_SESSION_ID" 2>/dev/null &
 ```
@@ -242,15 +242,15 @@ never blocks the user.
 
 When you are in plan mode and about to call ExitPlanMode:
 
-1. Check if the plan file already has a `## GSTACK REVIEW REPORT` section.
+1. Check if the plan file already has a `## ASTACK REVIEW REPORT` section.
 2. If it DOES — skip (a review skill already wrote a richer report).
 3. If it does NOT — run this command:
 
 \`\`\`bash
-$GSTACK_ROOT/bin/astack-review-read
+$ASTACK_ROOT/bin/astack-review-read
 \`\`\`
 
-Then write a `## GSTACK REVIEW REPORT` section to the end of the plan file:
+Then write a `## ASTACK REVIEW REPORT` section to the end of the plan file:
 
 - If the output contains review entries (JSONL lines before `---CONFIG---`): format the
   standard report table with runs/status/findings per skill, same format as the review
@@ -258,7 +258,7 @@ Then write a `## GSTACK REVIEW REPORT` section to the end of the plan file:
 - If the output is `NO_REVIEWS` or empty: write this placeholder table:
 
 \`\`\`markdown
-## GSTACK REVIEW REPORT
+## ASTACK REVIEW REPORT
 
 | Review | Trigger | Why | Runs | Status | Findings |
 |--------|---------|-----|------|--------|----------|
@@ -285,7 +285,7 @@ You see every click, every navigation, every action in real time.
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.agents/skills/astack/browse/dist/browse" ] && B="$_ROOT/.agents/skills/astack/browse/dist/browse"
-[ -z "$B" ] && B=$GSTACK_BROWSE/browse
+[ -z "$B" ] && B=$ASTACK_BROWSE/browse
 if [ -x "$B" ]; then
   echo "READY: $B"
 else

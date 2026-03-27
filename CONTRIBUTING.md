@@ -252,7 +252,7 @@ bun run build
 |--------|--------|-------|
 | Output directory | `{skill}/SKILL.md` | `.agents/skills/astack-{skill}/SKILL.md` (generated at setup, gitignored) |
 | Frontmatter | Full (name, description, allowed-tools, hooks, version) | Minimal (name + description only) |
-| Paths | `~/.claude/skills/astack` | `$GSTACK_ROOT` (`.agents/skills/astack` in a repo, otherwise `~/.codex/skills/astack`) |
+| Paths | `~/.claude/skills/astack` | `$ASTACK_ROOT` (`.agents/skills/astack` in a repo, otherwise `~/.codex/skills/astack`) |
 | Hook skills | `hooks:` frontmatter (enforced by Claude) | Inline safety advisory prose (advisory only) |
 | `/codex` skill | Included (Claude wraps codex exec) | Excluded (self-referential) |
 

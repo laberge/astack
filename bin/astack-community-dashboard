@@ -5,19 +5,19 @@
 # skill popularity, crash clusters, version distribution, retention.
 #
 # Env overrides (for testing):
-#   GSTACK_DIR                    — override auto-detected astack root
-#   GSTACK_SUPABASE_URL           — override Supabase project URL
-#   GSTACK_SUPABASE_ANON_KEY      — override Supabase anon key
+#   ASTACK_DIR                    — override auto-detected astack root
+#   ASTACK_SUPABASE_URL           — override Supabase project URL
+#   ASTACK_SUPABASE_ANON_KEY      — override Supabase anon key
 set -uo pipefail
 
-GSTACK_DIR="${GSTACK_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+ASTACK_DIR="${ASTACK_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 # Source Supabase config if not overridden by env
-if [ -z "${GSTACK_SUPABASE_URL:-}" ] && [ -f "$GSTACK_DIR/supabase/config.sh" ]; then
-  . "$GSTACK_DIR/supabase/config.sh"
+if [ -z "${ASTACK_SUPABASE_URL:-}" ] && [ -f "$ASTACK_DIR/supabase/config.sh" ]; then
+  . "$ASTACK_DIR/supabase/config.sh"
 fi
-SUPABASE_URL="${GSTACK_SUPABASE_URL:-}"
-ANON_KEY="${GSTACK_SUPABASE_ANON_KEY:-}"
+SUPABASE_URL="${ASTACK_SUPABASE_URL:-}"
+ANON_KEY="${ASTACK_SUPABASE_ANON_KEY:-}"
 
 if [ -z "$SUPABASE_URL" ] || [ -z "$ANON_KEY" ]; then
   echo "astack community dashboard"

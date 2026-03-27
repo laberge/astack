@@ -2,7 +2,7 @@
  * Tests for bin/astack-update-check bash script.
  *
  * Uses Bun.spawnSync to invoke the script with temp dirs and
- * GSTACK_DIR / GSTACK_STATE_DIR / GSTACK_REMOTE_URL env overrides
+ * ASTACK_DIR / ASTACK_STATE_DIR / ASTACK_REMOTE_URL env overrides
  * for full isolation.
  */
 
@@ -20,9 +20,9 @@ function run(extraEnv: Record<string, string> = {}, args: string[] = []) {
   const result = Bun.spawnSync(['bash', SCRIPT, ...args], {
     env: {
       ...process.env,
-      GSTACK_DIR: astackDir,
-      GSTACK_STATE_DIR: stateDir,
-      GSTACK_REMOTE_URL: `file://${join(astackDir, 'REMOTE_VERSION')}`,
+      ASTACK_DIR: astackDir,
+      ASTACK_STATE_DIR: stateDir,
+      ASTACK_REMOTE_URL: `file://${join(astackDir, 'REMOTE_VERSION')}`,
       ...extraEnv,
     },
     stdout: 'pipe',
@@ -181,7 +181,7 @@ describe('astack-update-check', () => {
     writeFileSync(join(astackDir, 'VERSION'), '0.3.3\n');
 
     const { exitCode, stdout } = run({
-      GSTACK_REMOTE_URL: 'file:///nonexistent/path/VERSION',
+      ASTACK_REMOTE_URL: 'file:///nonexistent/path/VERSION',
     });
     expect(exitCode).toBe(0);
     expect(stdout).toBe('');
@@ -210,7 +210,7 @@ describe('astack-update-check', () => {
     writeFileSync(join(astackDir, 'VERSION'), '0.3.3\n');
     writeFileSync(join(astackDir, 'REMOTE_VERSION'), '0.3.3\n');
 
-    const { exitCode } = run({ GSTACK_STATE_DIR: newStateDir });
+    const { exitCode } = run({ ASTACK_STATE_DIR: newStateDir });
     expect(exitCode).toBe(0);
     expect(existsSync(join(newStateDir, 'last-update-check'))).toBe(true);
   });
@@ -231,7 +231,7 @@ describe('astack-update-check', () => {
 
     // Remote is unreachable (simulates offline / CI / sandboxed agent)
     const { exitCode, stdout } = run({
-      GSTACK_REMOTE_URL: 'file:///nonexistent/path/VERSION',
+      ASTACK_REMOTE_URL: 'file:///nonexistent/path/VERSION',
     });
     expect(exitCode).toBe(0);
     // Should write UP_TO_DATE cache (not crash)

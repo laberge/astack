@@ -154,10 +154,10 @@ function generateSnapshotFlags(_ctx: TemplateContext): string {
 function generatePreambleBash(ctx: TemplateContext): string {
   const runtimeRoot = ctx.host === 'codex'
     ? `_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-GSTACK_ROOT="$HOME/.codex/skills/astack"
-[ -n "$_ROOT" ] && [ -d "$_ROOT/.agents/skills/astack" ] && GSTACK_ROOT="$_ROOT/.agents/skills/astack"
-GSTACK_BIN="$GSTACK_ROOT/bin"
-GSTACK_BROWSE="$GSTACK_ROOT/browse/dist"
+ASTACK_ROOT="$HOME/.codex/skills/astack"
+[ -n "$_ROOT" ] && [ -d "$_ROOT/.agents/skills/astack" ] && ASTACK_ROOT="$_ROOT/.agents/skills/astack"
+ASTACK_BIN="$ASTACK_ROOT/bin"
+ASTACK_BROWSE="$ASTACK_ROOT/browse/dist"
 `
     : '';
 
@@ -522,7 +522,7 @@ never blocks the user.
 
 When you are in plan mode and about to call ExitPlanMode:
 
-1. Check if the plan file already has a \`## GSTACK REVIEW REPORT\` section.
+1. Check if the plan file already has a \`## ASTACK REVIEW REPORT\` section.
 2. If it DOES — skip (a review skill already wrote a richer report).
 3. If it does NOT — run this command:
 
@@ -530,7 +530,7 @@ When you are in plan mode and about to call ExitPlanMode:
 ~/.claude/skills/astack/bin/astack-review-read
 \\\`\\\`\\\`
 
-Then write a \`## GSTACK REVIEW REPORT\` section to the end of the plan file:
+Then write a \`## ASTACK REVIEW REPORT\` section to the end of the plan file:
 
 - If the output contains review entries (JSONL lines before \`---CONFIG---\`): format the
   standard report table with runs/status/findings per skill, same format as the review
@@ -538,7 +538,7 @@ Then write a \`## GSTACK REVIEW REPORT\` section to the end of the plan file:
 - If the output is \`NO_REVIEWS\` or empty: write this placeholder table:
 
 \\\`\\\`\\\`markdown
-## GSTACK REVIEW REPORT
+## ASTACK REVIEW REPORT
 
 | Review | Trigger | Why | Runs | Status | Findings |
 |--------|---------|-----|------|--------|----------|
@@ -1380,7 +1380,7 @@ Summary. For prior reviews, use the JSONL fields directly — they contain all r
 Produce this markdown table:
 
 \\\`\\\`\\\`markdown
-## GSTACK REVIEW REPORT
+## ASTACK REVIEW REPORT
 
 | Review | Trigger | Why | Runs | Status | Findings |
 |--------|---------|-----|------|--------|----------|
@@ -1404,9 +1404,9 @@ Below the table, add these lines (omit any that are empty/not applicable):
 file you are allowed to edit in plan mode. The plan file review report is part of the
 plan's living status.
 
-- Search the plan file for a \\\`## GSTACK REVIEW REPORT\\\` section **anywhere** in the file
+- Search the plan file for a \\\`## ASTACK REVIEW REPORT\\\` section **anywhere** in the file
   (not just at the end — content may have been added after it).
-- If found, **replace it** entirely using the Edit tool. Match from \\\`## GSTACK REVIEW REPORT\\\`
+- If found, **replace it** entirely using the Edit tool. Match from \\\`## ASTACK REVIEW REPORT\\\`
   through either the next \\\`## \\\` heading or end of file, whichever comes first. This ensures
   content added after the report section is preserved, not eaten. If the Edit fails
   (e.g., concurrent edit changed the content), re-read the plan file and retry once.

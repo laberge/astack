@@ -8,10 +8,10 @@
 #   astack-analytics all      # all time
 #
 # Env overrides (for testing):
-#   GSTACK_STATE_DIR  — override ~/.astack state directory
+#   ASTACK_STATE_DIR  — override ~/.astack state directory
 set -uo pipefail
 
-STATE_DIR="${GSTACK_STATE_DIR:-$HOME/.astack}"
+STATE_DIR="${ASTACK_STATE_DIR:-$HOME/.astack}"
 JSONL_FILE="$STATE_DIR/analytics/skill-usage.jsonl"
 
 # ─── Parse time window ───────────────────────────────────────

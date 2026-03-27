@@ -15,10 +15,10 @@ export const HOST_PATHS: Record<Host, HostPaths> = {
     browseDir: '~/.claude/skills/astack/browse/dist',
   },
   codex: {
-    skillRoot: '$GSTACK_ROOT',
+    skillRoot: '$ASTACK_ROOT',
     localSkillRoot: '.agents/skills/astack',
-    binDir: '$GSTACK_BIN',
-    browseDir: '$GSTACK_BROWSE',
+    binDir: '$ASTACK_BIN',
+    browseDir: '$ASTACK_BROWSE',
   },
 };
 

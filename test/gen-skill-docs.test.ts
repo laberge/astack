@@ -712,7 +712,7 @@ describe('PLAN_FILE_REVIEW_REPORT resolver', () => {
   for (const skill of REVIEW_SKILLS) {
     test(`plan file review report appears in ${skill} generated file`, () => {
       const content = fs.readFileSync(path.join(ROOT, skill, 'SKILL.md'), 'utf-8');
-      expect(content).toContain('GSTACK REVIEW REPORT');
+      expect(content).toContain('ASTACK REVIEW REPORT');
     });
   }
 
@@ -897,7 +897,7 @@ describe('Plan status footer in preamble', () => {
     // Read any skill that uses PREAMBLE
     const content = fs.readFileSync(path.join(ROOT, 'office-hours', 'SKILL.md'), 'utf-8');
     expect(content).toContain('Plan Status Footer');
-    expect(content).toContain('GSTACK REVIEW REPORT');
+    expect(content).toContain('ASTACK REVIEW REPORT');
     expect(content).toContain('astack-review-read');
     expect(content).toContain('ExitPlanMode');
     expect(content).toContain('NO REVIEWS YET');
@@ -1338,10 +1338,10 @@ describe('Codex generation (--host codex)', () => {
   test('Codex preamble resolves runtime assets from repo-local or global astack roots', () => {
     // Check a skill that has a preamble (review is a good candidate)
     const content = fs.readFileSync(path.join(AGENTS_DIR, 'astack-review', 'SKILL.md'), 'utf-8');
-    expect(content).toContain('GSTACK_ROOT');
+    expect(content).toContain('ASTACK_ROOT');
     expect(content).toContain('$_ROOT/.agents/skills/astack');
-    expect(content).toContain('$GSTACK_BIN/astack-config');
-    expect(content).toContain('$GSTACK_ROOT/astack-upgrade/SKILL.md');
+    expect(content).toContain('$ASTACK_BIN/astack-config');
+    expect(content).toContain('$ASTACK_ROOT/astack-upgrade/SKILL.md');
     expect(content).not.toContain('~/.codex/skills/astack/bin/astack-config get telemetry');
   });
 
@@ -1380,9 +1380,9 @@ describe('Codex generation (--host codex)', () => {
     // Test each of the 4 path rewrite rules individually
     const content = fs.readFileSync(path.join(AGENTS_DIR, 'astack-review', 'SKILL.md'), 'utf-8');
 
-    // Rule 1: ~/.claude/skills/astack → $GSTACK_ROOT
+    // Rule 1: ~/.claude/skills/astack → $ASTACK_ROOT
     expect(content).not.toContain('~/.claude/skills/astack');
-    expect(content).toContain('$GSTACK_ROOT');
+    expect(content).toContain('$ASTACK_ROOT');
 
     // Rule 2: .claude/skills/astack → .agents/skills/astack
     expect(content).not.toContain('.claude/skills/astack');
@@ -1402,7 +1402,7 @@ describe('Codex generation (--host codex)', () => {
       expect(content).not.toContain('~/.claude/skills');
       expect(content).not.toContain('.claude/skills');
       if (content.includes('astack-config') || content.includes('astack-update-check') || content.includes('astack-telemetry-log')) {
-        expect(content).toContain('$GSTACK_ROOT');
+        expect(content).toContain('$ASTACK_ROOT');
       }
       // If a skill references checklist.md, it must use the correct sidecar path
       if (content.includes('checklist.md') && !content.includes('design-checklist.md')) {
@@ -1488,7 +1488,7 @@ describe('setup script validation', () => {
     expect(codexSection).toContain('create_codex_runtime_root');
     expect(codexSection).toContain('link_codex_skill_dirs');
     expect(codexSection).not.toContain('link_claude_skill_dirs');
-    expect(codexSection).not.toContain('ln -snf "$GSTACK_DIR" "$CODEX_GSTACK"');
+    expect(codexSection).not.toContain('ln -snf "$ASTACK_DIR" "$CODEX_ASTACK"');
   });
 
   test('Codex install prefers repo-local .agents/skills when setup runs from there', () => {
@@ -1500,16 +1500,16 @@ describe('setup script validation', () => {
   });
 
   test('setup separates install path from source path for symlinked repo-local installs', () => {
-    expect(setupContent).toContain('INSTALL_GSTACK_DIR=');
-    expect(setupContent).toContain('SOURCE_GSTACK_DIR=');
+    expect(setupContent).toContain('INSTALL_ASTACK_DIR=');
+    expect(setupContent).toContain('SOURCE_ASTACK_DIR=');
     expect(setupContent).toContain('INSTALL_SKILLS_DIR=');
-    expect(setupContent).toContain('CODEX_GSTACK="$INSTALL_GSTACK_DIR"');
-    expect(setupContent).toContain('link_codex_skill_dirs "$SOURCE_GSTACK_DIR" "$CODEX_SKILLS"');
+    expect(setupContent).toContain('CODEX_ASTACK="$INSTALL_ASTACK_DIR"');
+    expect(setupContent).toContain('link_codex_skill_dirs "$SOURCE_ASTACK_DIR" "$CODEX_SKILLS"');
   });
 
   test('Codex installs always create sidecar runtime assets for the real skill target', () => {
     expect(setupContent).toContain('if [ "$INSTALL_CODEX" -eq 1 ]; then');
-    expect(setupContent).toContain('create_agents_sidecar "$SOURCE_GSTACK_DIR"');
+    expect(setupContent).toContain('create_agents_sidecar "$SOURCE_ASTACK_DIR"');
   });
 
   test('link_codex_skill_dirs reads from .agents/skills/', () => {
@@ -1548,13 +1548,13 @@ describe('setup script validation', () => {
     expect(fnBody).toContain('[ "$skill_name" = "astack" ] && continue');
   });
 
-  // T2: Dynamic $GSTACK_ROOT paths in generated Codex preambles
-  test('generated Codex preambles use dynamic GSTACK_ROOT paths', () => {
+  // T2: Dynamic $ASTACK_ROOT paths in generated Codex preambles
+  test('generated Codex preambles use dynamic ASTACK_ROOT paths', () => {
     const codexSkillDir = path.join(ROOT, '.agents', 'skills', 'astack-ship');
     if (!fs.existsSync(codexSkillDir)) return; // skip if .agents/ not generated
     const content = fs.readFileSync(path.join(codexSkillDir, 'SKILL.md'), 'utf-8');
-    expect(content).toContain('GSTACK_ROOT=');
-    expect(content).toContain('$GSTACK_BIN/');
+    expect(content).toContain('ASTACK_ROOT=');
+    expect(content).toContain('$ASTACK_BIN/');
   });
 
   // T3: Kiro host support in setup script
